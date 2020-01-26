@@ -5,6 +5,7 @@ import json
 
 from nose2.events import Plugin
 from nose2 import result
+from nose2 import session
 
 
 class Rt(Plugin):
@@ -17,7 +18,8 @@ class Rt(Plugin):
             'endpoint', '')
         self.show_errors = self.config.as_bool(
             'show_errors', '')
-
+        self.session_obj = session.Session()
+        self.test_prefix = self.session_obj.testMethodPrefix
         self.uuid = str(uuid.uuid4())
         self.success = 0
         self.errors = 0
@@ -30,7 +32,7 @@ class Rt(Plugin):
         self.attrs = []
         self.tests = None
         self.addArgument(self.attrs, None, "rte", "With --rte \"your_environment\" option you can send "
-                                                  "additional info to the Testgr sertver")
+                                                  "additional info to the Testgr server")
 
         group = self.session.pluginargs
         group.add_argument('--rt-job-report', action='store_true', dest='rt_job_report',
@@ -137,23 +139,25 @@ class Rt(Plugin):
 
     def getTests(self, event):
         suite = event.suite
-        tests = {}
+        tests = []
         test_uuids = {}
         test_descriptions = {}
         for suite_data in suite:
             for test_data in suite_data:
                 for test_list in test_data:
+                    # Single
                     if isinstance(test_list, unittest.suite.TestSuite):
                         for test in test_list._tests:
                             test_uuid = str(uuid.uuid4())
                             test_data = (str(test).split(" "))
-                            tests[str(test_data[0])] = test.id()
+                            tests.append(({str(test_data[0]): test.id()}))
                             test_uuids[test.id()] = test_uuid
                             test_descriptions[test_uuid] = test.shortDescription()
+                    # Multiple
                     else:
                         test_uuid = str(uuid.uuid4())
                         test_data = (str(test_list).split(" "))
-                        tests[str(test_data[0])] = test_list.id()
+                        tests.append(({str(test_data[0]): test_list.id()}))
                         test_uuids[test_list.id()] = test_uuid
                         test_descriptions[test_uuid] = test_list.shortDescription()
         return tests, test_uuids, test_descriptions

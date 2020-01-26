@@ -1,8 +1,8 @@
 # nose2rt - nose2 data collector for Testgr
 
-Plugin for sending HTTP POST updates to your **Testgr** service.
+Plugin sends nose2 data to Testgr server.
 
-### Installing
+### Setup
 
 ```pip install nose2rt```
 
@@ -17,14 +17,19 @@ plugins = nose2rt.rt
 [rt]
 endpoint = http://127.0.0.1/loader  # Your Testgr service URL
 show_errors = True # show POST errors
+
+[test-result]
+always-on = True
+descriptions = True
 ```
 ### Launch
 ```
 nose2 --rt -> will launch nose2 with nose2rt plugin.
-Additional parameters: 
+```
+Additional arguments: 
 --rte "your_environment" -> will launch nose2 and send your environment name as additional info to the Testgr server. 
 --rt-job-report -> will send email after job finish.
-```
+
 
 ## Authors
 

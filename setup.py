@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="nose2rt",
-    version="0.5.1",
+    version="0.5.2",
     author="Andrey Smirnov",
     author_email="and.inbx@gmail.com",
     description="nose2 data collector for Testgr",

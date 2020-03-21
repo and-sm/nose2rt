@@ -144,20 +144,23 @@ class Rt(Plugin):
         test_descriptions = {}
         for suite_data in suite:
             for test_data in suite_data:
-                for test_list in test_data:
-                    # Single
-                    if isinstance(test_list, unittest.suite.TestSuite):
-                        for test in test_list._tests:
+                try:
+                    for test_list in test_data:
+                        # Single
+                        if isinstance(test_list, unittest.suite.TestSuite):
+                            for test in test_list._tests:
+                                test_uuid = str(uuid.uuid4())
+                                test_data = (str(test).split(" "))
+                                tests.append(({str(test_data[0]): test.id()}))
+                                test_uuids[test.id()] = test_uuid
+                                test_descriptions[test_uuid] = test.shortDescription()
+                        # Multiple
+                        else:
                             test_uuid = str(uuid.uuid4())
-                            test_data = (str(test).split(" "))
-                            tests.append(({str(test_data[0]): test.id()}))
-                            test_uuids[test.id()] = test_uuid
-                            test_descriptions[test_uuid] = test.shortDescription()
-                    # Multiple
-                    else:
-                        test_uuid = str(uuid.uuid4())
-                        test_data = (str(test_list).split(" "))
-                        tests.append(({str(test_data[0]): test_list.id()}))
-                        test_uuids[test_list.id()] = test_uuid
-                        test_descriptions[test_uuid] = test_list.shortDescription()
+                            test_data = (str(test_list).split(" "))
+                            tests.append(({str(test_data[0]): test_list.id()}))
+                            test_uuids[test_list.id()] = test_uuid
+                            test_descriptions[test_uuid] = test_list.shortDescription()
+                except:
+                    print("FAIL: " + str(test_data))
         return tests, test_uuids, test_descriptions

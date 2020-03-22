@@ -32,14 +32,16 @@ class Rt(Plugin):
         self.attrs = []
         self.tests = None
         self.addArgument(self.attrs, None, "rte", "With --rte \"your_environment\" option you can send "
-                                                  "additional info to the Testgr server")
-
+                                                  "environment name or info to Testgr server")                                      
         group = self.session.pluginargs
         group.add_argument('--rt-job-report', action='store_true', dest='rt_job_report',
                            help='Send Testgr job result via email')
+        group.add_argument('--rt-custom-data', dest='rt_custom_data',
+                           help='With --rt-custom-data {\"key\": \"value\"} option you can send additional data to Testgr server')
 
     def handleArgs(self, event):
         self.send_report_arg = event.args.rt_job_report
+        self.rt_custom_data = event.args.rt_custom_data
 
     def send_report(self):
         if self.send_report_arg is True:
@@ -62,6 +64,11 @@ class Rt(Plugin):
             env = self.attrs[0]
         else:
             env = None
+        if self.rt_custom_data:
+            custom_data = self.rt_custom_data
+            print(custom_data)
+        else:
+            custom_data = None
         self.post({
             'fw': "1",
             'type': "startTestRun",
@@ -70,6 +77,7 @@ class Rt(Plugin):
             'test_uuids': self.tests[1],
             'test_descriptions': self.tests[2],
             'env': env,
+            'custom_data': custom_data,
             'startTime': str(event.startTime)
         })
 

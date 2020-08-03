@@ -2,8 +2,11 @@ import unittest
 import requests
 import uuid
 import json
+import traceback
 
 from nose2.events import Plugin
+from nose2.events import Event
+from nose2.util import format_traceback
 from nose2 import result
 from nose2 import session
 
@@ -96,8 +99,12 @@ class Rt(Plugin):
 
     def testOutcome(self, event):
         msg = ''
+        trace = ''
         if event.exc_info:
             msg = event.exc_info
+            trace = event.exc_info[2]
+            trace = traceback.format_tb(tb=trace)
+            trace = "\n".join(trace).replace("  ", "\t")
         elif event.reason:
             msg = event.reason
         error_text = ''
@@ -118,13 +125,13 @@ class Rt(Plugin):
         elif event.outcome == result.PASS and event.expected:
             error_text = msg
             status = 'passed'
-
-        self.test_outcome = status, error_text
+        self.test_outcome = status, error_text, trace
 
     def stopTest(self, event):
         test = event.test
         test_id_str = test.id().split('\n')
         test_id = test_id_str[0]
+
         self.post({
             'fw': "1",
             'type': 'stopTestItem',
@@ -133,7 +140,9 @@ class Rt(Plugin):
             'uuid': self.tests[1][test_id],
             'stopTime': str(event.stopTime),
             'status': str(self.test_outcome[0]),
-            'msg': str(self.test_outcome[1])})
+            'msg': str(self.test_outcome[1]),
+            'trace': str(self.test_outcome[2])
+        })
 
     def stopTestRun(self, event):
         self.timeTaken = "%.3f" % event.timeTaken

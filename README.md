@@ -21,15 +21,21 @@ show_errors = True # show POST errors
 [test-result]
 always-on = True
 descriptions = True
+
 ```
 ### Launch
 ```
 nose2 --rt -> will launch nose2 with nose2rt plugin.
 ```
-Additional arguments: 
---rte "your_environment" -> will launch nose2 and send your environment name as additional info to the Testgr server. 
---rt-job-report -> will send email after job finish.
 
+Additional parameters: 
+
+* --rte "your_environment" -> will launch nose2 and send your environment name as additional info to the Testgr server. 
+* --rt-job-report - will send email after job finish.
+* --rt-custom-data - will send any custom data to Testgr in Dict format. Example:
+```
+--rt-custom data='{"Git":"dev-branch"}'
+```
 
 ## Authors
 

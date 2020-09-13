@@ -69,7 +69,6 @@ class Rt(Plugin):
             env = None
         if self.rt_custom_data:
             custom_data = self.rt_custom_data
-            print(custom_data)
         else:
             custom_data = None
         self.post({
@@ -103,8 +102,15 @@ class Rt(Plugin):
         if event.exc_info:
             msg = event.exc_info
             trace = event.exc_info[2]
-            trace = traceback.format_tb(tb=trace)
-            trace = "\n".join(trace).replace("  ", "\t")
+            # for -N arg
+            if not isinstance(trace, str):
+                trace = traceback.format_tb(tb=trace)
+                trace = "\n".join(trace).replace("  ", "\t")
+            else:
+                if trace in msg:
+                    msg = list(msg)
+                    msg[2] = ""
+                    msg = tuple(msg)
         elif event.reason:
             msg = event.reason
         error_text = ''
@@ -131,7 +137,6 @@ class Rt(Plugin):
         test = event.test
         test_id_str = test.id().split('\n')
         test_id = test_id_str[0]
-
         self.post({
             'fw': "1",
             'type': 'stopTestItem',

@@ -19,6 +19,7 @@ class Rt(Plugin):
 
         self.endpoint = self.config.as_str(
             'endpoint', '')
+        self.screenshots_var = self.config.as_str('screenshots_var', '')
         self.show_errors = self.config.as_bool(
             'show_errors', '')
         self.session_obj = session.Session()
@@ -110,7 +111,7 @@ class Rt(Plugin):
                 if trace in msg:
                     msg = list(msg)
                     msg[2] = ""
-                    msg = tuple(msg)
+                    msg = tuple(msg)  
         elif event.reason:
             msg = event.reason
         error_text = ''
@@ -137,11 +138,19 @@ class Rt(Plugin):
         test = event.test
         test_id_str = test.id().split('\n')
         test_id = test_id_str[0]
+        screens_for_upload = ""
+        try:
+            screens = getattr(test, self.screenshots_var)
+            if screens and len(screens):
+                screens_for_upload = screens
+        except:
+            pass
         self.post({
             'fw': "1",
             'type': 'stopTestItem',
             'job_id': self.uuid,
             'test': test_id,
+            'screens': screens_for_upload,
             'uuid': self.tests[1][test_id],
             'stopTime': str(event.stopTime),
             'status': str(self.test_outcome[0]),
@@ -186,3 +195,4 @@ class Rt(Plugin):
                 except:
                     print("FAIL: " + str(test_data))
         return tests, test_uuids, test_descriptions
+

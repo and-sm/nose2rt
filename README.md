@@ -16,6 +16,7 @@ plugins = nose2rt.rt
 
 [rt]
 endpoint = http://127.0.0.1/loader  # Your Testgr service URL
+screenshots_var = t_screen
 show_errors = True # show POST errors
 
 [test-result]

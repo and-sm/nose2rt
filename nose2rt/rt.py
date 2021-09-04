@@ -20,6 +20,7 @@ class Rt(Plugin):
         self.endpoint = self.config.as_str(
             'endpoint', '')
         self.screenshots_var = self.config.as_str('screenshots_var', '')
+        self.return_job_file = self.config.as_str('return_job_file', '')
         self.show_errors = self.config.as_bool(
             'show_errors', '')
         self.session_obj = session.Session()
@@ -41,11 +42,15 @@ class Rt(Plugin):
         group.add_argument('--rt-job-report', action='store_true', dest='rt_job_report',
                            help='Send Testgr job result via email')
         group.add_argument('--rt-custom-data', dest='rt_custom_data',
-                           help='With --rt-custom-data {\"key\": \"value\"} option you can send additional data to Testgr server')
+                           help='With --rt-custom-data {\"key\": \"value\"} option you can send additional data to '
+                                'Testgr server')
+        group.add_argument('--rt-return-job', dest='rt_return_job', action="store_true",
+                           help='With --rt-return-job option you can return job UUID')
 
     def handleArgs(self, event):
         self.send_report_arg = event.args.rt_job_report
         self.rt_custom_data = event.args.rt_custom_data
+        self.rt_return_job = event.args.rt_return_job
 
     def send_report(self):
         if self.send_report_arg is True:
@@ -167,6 +172,9 @@ class Rt(Plugin):
             'stopTime': str(event.stopTime),
             'timeTaken': self.timeTaken,
             'send_report': self.send_report()})
+        if self.rt_return_job is True:
+            with open(self.return_job_file, "w") as file:
+                file.write(self.uuid)
 
     def getTests(self, event):
         suite = event.suite

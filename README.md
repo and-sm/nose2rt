@@ -17,6 +17,7 @@ plugins = nose2rt.rt
 [rt]
 endpoint = http://127.0.0.1/loader  # Your Testgr service URL
 screenshots_var = t_screen
+return_job_file = testgr_last_job.txt
 show_errors = True # show POST errors
 
 [test-result]
@@ -32,8 +33,9 @@ nose2 --rt -> will launch nose2 with nose2rt plugin.
 Additional parameters: 
 
 * --rte "your_environment" -> will launch nose2 and send your environment name as additional info to the Testgr server. 
-* --rt-job-report - will send email after job finish.
-* --rt-custom-data - will send any custom data to Testgr in Dict format. Example:
+* --rt-job-report - send email after job finish.
+* --rt-return-job - write last finished job UUID in file, configured by "return_job_file" config variable.
+* --rt-custom-data - send any custom data to Testgr in Dict format. Example:
 ```
 --rt-custom data='{"Git":"dev-branch"}'
 ```
